@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Genre Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        textarea { width: 100%; height: 150px; }
+        button { margin-top: 10px; padding: 10px 20px; }
+        .genre-output { font-size: 1.5em; margin: 20px 0; }
+        canvas { max-width: 100%; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Predict Song Genre</h1>
+    <textarea id="lyrics" placeholder="Paste song lyrics here..."></textarea><br>
+    <button onclick="predictGenre()">Predict Genre</button>
+
+    <div id="result" style="display:none;">
+        <h2>Predicted Genre: <span id="genre"></span></h2>
+        <h3>Genre Probabilities</h3>
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<script>
+    let chartInstance = null;
+
+    function predictGenre() {
+        const lyrics = document.getElementById('lyrics').value;
+
+        fetch('http://localhost:9090/mendeley/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lyrics })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('genre').textContent = data.genre;
+
+            const labels = [
+                'Pop', 'Country', 'Blues', 'Jazz', 
+                'Reggae', 'Rock', 'Hip Hop', 'Classic'
+            ];
+
+            const values = [
+                data.popProbability,
+                data.countryProbability,
+                data.bluesProbability,
+                data.jazzProbability,
+                data.reggaeProbability,
+                data.rockProbability,
+                data.hipHopProbability,
+                data.classicProbability
+            ];
+
+            const ctx = document.getElementById('pieChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Genre Probabilities',
+                        data: values,
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD',
+                            '#2ECC71', '#E67E22', '#3498DB', '#95A5A6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            document.getElementById('result').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to get prediction.");
+        });
+    }
+</script>
+<!-- 
+<script>
+    function predictGenre() {
+        const lyrics = document.getElementById('lyrics').value;
+
+        fetch('http://localhost:9090/mendeley/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lyrics })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('genre').textContent = data.genre;
+
+            const labels = [
+                'Pop', 'Country', 'Blues', 'Jazz', 
+                'Reggae', 'Rock', 'Hip Hop', 'Classic'
+            ];
+
+            const values = [
+                data.popProbability,
+                data.countryProbability,
+                data.bluesProbability,
+                data.jazzProbability,
+                data.reggaeProbability,
+                data.rockProbability,
+                data.hipHopProbability,
+                data.classicProbability
+            ];
+
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Genre Probabilities',
+                        data: values,
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD',
+                            '#2ECC71', '#E67E22', '#3498DB', '#95A5A6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            document.getElementById('result').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to get prediction.");
+        });
+    }
+</script> -->
+</body>
+</html>
