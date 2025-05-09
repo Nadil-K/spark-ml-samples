@@ -93,67 +93,6 @@
         });
     }
 </script>
-<!-- 
-<script>
-    function predictGenre() {
-        const lyrics = document.getElementById('lyrics').value;
 
-        fetch('http://localhost:9090/mendeley/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ lyrics })
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('genre').textContent = data.genre;
-
-            const labels = [
-                'Pop', 'Country', 'Blues', 'Jazz', 
-                'Reggae', 'Rock', 'Hip Hop', 'Classic'
-            ];
-
-            const values = [
-                data.popProbability,
-                data.countryProbability,
-                data.bluesProbability,
-                data.jazzProbability,
-                data.reggaeProbability,
-                data.rockProbability,
-                data.hipHopProbability,
-                data.classicProbability
-            ];
-
-            const ctx = document.getElementById('pieChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Genre Probabilities',
-                        data: values,
-                        backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD',
-                            '#2ECC71', '#E67E22', '#3498DB', '#95A5A6'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'right' }
-                    }
-                }
-            });
-
-            document.getElementById('result').style.display = 'block';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("Failed to get prediction.");
-        });
-    }
-</script> -->
 </body>
 </html>
